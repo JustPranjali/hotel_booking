@@ -21,14 +21,6 @@ session_start(); // Start session at the beginning
             width: 400px;
 
         }
-        .login-form {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-
-        }
         
     </style>
 </head>
