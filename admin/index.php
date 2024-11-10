@@ -1,5 +1,11 @@
-<?php
-session_start(); // Start session at the beginning
+<?php 
+   require('inc/essentials.php');
+   require('inc/db_config.php'); 
+
+   session_start();
+    if(isset($_SESSION['adminLogin']) && $_SESSION['adminLogin']==true){
+    redirect('dashboard.php');
+    }
 ?>
 
 <!DOCTYPE html>
@@ -9,8 +15,6 @@ session_start(); // Start session at the beginning
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login Panel</title>
     <?php require('inc/links.php'); ?>
-    <?php require('inc/db_config.php'); ?>
-    <?php require('inc/essentials.php'); ?>
 
     <style>
         .login-form {
@@ -19,9 +23,7 @@ session_start(); // Start session at the beginning
             left: 50%;
             transform: translate(-50%, -50%);
             width: 400px;
-
         }
-        
     </style>
 </head>
 <body class="bg-light">
@@ -32,10 +34,10 @@ session_start(); // Start session at the beginning
         
         <div class="p-4">
             <div class="mb-3">
-                <input name="admin_name" type="text" class="form-control shadow-none text-center" placeholder="Admin Name">
+                <input name="admin_name" required type="text" class="form-control shadow-none text-center" placeholder="Admin Name">
             </div>
             <div class="mb-4">
-                <input name="admin_pass" type="password" class="form-control shadow-none text-center" placeholder="Password">
+                <input name="admin_pass" required type="password" class="form-control shadow-none text-center" placeholder="Password">
             </div>
 
             <button name="login" type="submit" class="btn text-white custom-bg shadow-none">LOGIN</button>
@@ -47,25 +49,24 @@ session_start(); // Start session at the beginning
 if (isset($_POST['login'])) 
 {
     $frm_data = filteration($_POST);
-    echo "<pre>"; print_r($frm_data); echo "</pre>"; // Debugging line to check filtered data
-    
-    $query = "SELECT * FROM `admin_cred` WHERE `admin_name` = ? AND `admin_pass` = ?";
-    $values = [$frm_data['admin_name'], $frm_data['admin_pass']]; 
+
+    $query = "SELECT * FROM `admin_cred` WHERE `admin_name` =? AND `admin_pass` =?";
+    $values = [$frm_data['admin_name'], $frm_data['admin_pass']];
 
     $res = select($query, $values, "ss");
-    
-    // Check if $res is valid and if there is a matching user
-    if ($res && $res->num_rows == 1) {
+    if($res->num_rows == 1){
         $row = mysqli_fetch_assoc($res);
         $_SESSION['adminLogin'] = true;
         $_SESSION['adminId'] = $row['sr_no'];
         redirect('dashboard.php');
-         
-    } else {
-        alert('error', 'Login Failed - Invalid Credentials'); 
+    }
+    else{
+        alert('error','Login failed - Invalid Credentials');
     }
 }
 ?>
 
+
+<?php require('inc/scripts.php'); ?>
 </body>
 </html>
